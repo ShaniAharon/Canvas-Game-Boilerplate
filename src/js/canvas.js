@@ -3,6 +3,11 @@ import platformSmallTall from '../img/platformSmallTall.png'
 import hills from '../img/hills.png'
 import background from '../img/background.png'
 
+import spriteRunLeft from '../img/spriteRunLeft.png'
+import spriteRunRight from '../img/spriteRunRight.png'
+import spriteStandLeft from '../img/spriteStandLeft.png'
+import spriteStandRight from '../img/spriteStandRight.png'
+
 
 const gCanvas = document.querySelector('.my-canvas')
 const gCtx = gCanvas.getContext('2d')
@@ -23,14 +28,43 @@ class Player {
       x: 0,
       y: 0,
     }
-    this.width = 30
-    this.height = 30
+    this.width = 66
+    this.height = 150
+    this.image = createImage(spriteStandRight)
+    this.frames = 0
+    this.sprites = {
+      stand: {
+        right: createImage(spriteStandRight),
+        left: createImage(spriteStandLeft),
+        cropWidth: 177,
+        width: 66
+      },
+      run: {
+        right: createImage(spriteRunRight),
+        left: createImage(spriteRunLeft),
+        cropWidth: 341,
+        width: 127.875
+      }
+    }
+    this.currSprite = this.sprites.stand.right
+    this.currCropWidth = 177
   }
   draw() {
-    gCtx.fillStyle = 'red'
-    gCtx.fillRect(this.pos.x, this.pos.y, this.width, this.height)
+    // gCtx.fillStyle = 'red'
+    // gCtx.fillRect(this.pos.x, this.pos.y, this.width, this.height)
+    // 4 parametrs for crop the image
+    gCtx.drawImage(this.currSprite,
+      this.currCropWidth * this.frames, // x pos
+      0, // y pos
+      this.currCropWidth, // width: ;
+      400, // height
+      this.pos.x, this.pos.y, this.width, this.height)
+
   }
   update() {
+    this.frames++
+    if (this.frames > 59 && (this.currSprite === this.sprites.stand.right || this.currSprite === this.sprites.stand.left)) this.frames = 0
+    else if (this.frames > 29 && (this.currSprite === this.sprites.run.right || this.currSprite === this.sprites.run.left)) this.frames = 0
     this.draw()
     this.pos.y += this.velocity.y
     this.pos.x += this.velocity.x
@@ -92,6 +126,7 @@ let player = new Player()
 let platforms = []
 let genericObjects = []
 
+let lastKey
 const keys = {
   right: {
     pressed: false,
@@ -159,6 +194,27 @@ function animate() {
     )
       player.velocity.y = 0
   })
+
+  // sprite switching
+  if (keys.right.pressed && lastKey === 'right' && player.currSprite !== player.sprites.run.right) {
+    player.frames = 1
+    player.currSprite = player.sprites.run.right
+    player.currCropWidth = player.sprites.run.cropWidth
+    player.width = player.sprites.run.width
+  } else if (keys.left.pressed && lastKey === 'left' && player.currSprite !== player.sprites.run.left) {
+    player.currSprite = player.sprites.run.left
+    player.currCropWidth = player.sprites.run.cropWidth
+    player.width = player.sprites.run.width
+  } else if (!keys.left.pressed && lastKey === 'left' && player.currSprite !== player.sprites.stand.left) {
+    player.currSprite = player.sprites.stand.left
+    player.currCropWidth = player.sprites.stand.cropWidth
+    player.width = player.sprites.stand.width
+  } else if (!keys.right.pressed && lastKey === 'right' && player.currSprite !== player.sprites.stand.right) {
+    player.currSprite = player.sprites.stand.right
+    player.currCropWidth = player.sprites.stand.cropWidth
+    player.width = player.sprites.stand.width
+  }
+
   // win condition
   if (scrollOffset > platfromimage.width * 5 + 300 - 2) console.log('you win');
   //lose condition
@@ -176,6 +232,7 @@ addEventListener('keydown', ({ key }) => {
     case 'a':
       console.log('left')
       keys.left.pressed = true
+      lastKey = 'left'
       break
     case 's':
       console.log('down')
@@ -183,6 +240,7 @@ addEventListener('keydown', ({ key }) => {
     case 'd':
       console.log('right')
       keys.right.pressed = true
+      lastKey = 'right'
       break
     case 'w':
       console.log('up')
@@ -203,6 +261,7 @@ addEventListener('keyup', ({ key }) => {
     case 'd':
       console.log('right')
       keys.right.pressed = false
+
       break
     case 'w':
       console.log('up')
