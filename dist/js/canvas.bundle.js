@@ -125,6 +125,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/img/platformSmallTall.png":
+/*!***************************************!*\
+  !*** ./src/img/platformSmallTall.png ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "0587f9be8e442eb74b2fe283bbf1a947.png");
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
@@ -135,13 +148,15 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _img_platform_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../img/platform.png */ "./src/img/platform.png");
-/* harmony import */ var _img_hills_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../img/hills.png */ "./src/img/hills.png");
-/* harmony import */ var _img_background_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../img/background.png */ "./src/img/background.png");
+/* harmony import */ var _img_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../img/platformSmallTall.png */ "./src/img/platformSmallTall.png");
+/* harmony import */ var _img_hills_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../img/hills.png */ "./src/img/hills.png");
+/* harmony import */ var _img_background_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../img/background.png */ "./src/img/background.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -158,6 +173,7 @@ var Player = /*#__PURE__*/function () {
   function Player() {
     _classCallCheck(this, Player);
 
+    this.speed = 10;
     this.pos = {
       x: 100,
       y: 100
@@ -254,29 +270,10 @@ function createImage(imageSrc) {
 }
 
 var platfromimage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+var platfromSmallTallImage = createImage(_img_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var player = new Player();
-var platforms = [new Platform({
-  x: 0,
-  y: 470,
-  image: platfromimage
-}), new Platform({
-  x: platfromimage.width - 3,
-  y: 470,
-  image: platfromimage
-}), new Platform({
-  x: platfromimage.width * 2 + 100,
-  y: 470,
-  image: platfromimage
-})];
-var genericObjects = [new GenericObject({
-  x: 0,
-  y: 0,
-  image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
-}), new GenericObject({
-  x: 0,
-  y: 0,
-  image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
-})];
+var platforms = [];
+var genericObjects = [];
 var keys = {
   right: {
     pressed: false
@@ -291,6 +288,26 @@ function init() {
   platfromimage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
   player = new Player();
   platforms = [new Platform({
+    x: platfromimage.width * 4 + 300 - 2 + platfromimage.width - 290,
+    y: 270,
+    image: platfromSmallTallImage
+  }), new Platform({
+    x: platfromimage.width * 2 + 100,
+    y: 470,
+    image: platfromimage
+  }), new Platform({
+    x: platfromimage.width * 3 + 300,
+    y: 470,
+    image: platfromimage
+  }), new Platform({
+    x: platfromimage.width * 4 + 300 - 2,
+    y: 470,
+    image: platfromimage
+  }), new Platform({
+    x: platfromimage.width * 5 + 700 - 2,
+    y: 470,
+    image: platfromimage
+  }), new Platform({
     x: 0,
     y: 470,
     image: platfromimage
@@ -298,19 +315,15 @@ function init() {
     x: platfromimage.width - 3,
     y: 470,
     image: platfromimage
-  }), new Platform({
-    x: platfromimage.width * 2 + 100,
-    y: 470,
-    image: platfromimage
   })];
   genericObjects = [new GenericObject({
     x: 0,
     y: 0,
-    image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+    image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_3__["default"])
   }), new GenericObject({
     x: 0,
     y: 0,
-    image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+    image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_2__["default"])
   })];
   scrollOffset = 0;
 }
@@ -328,27 +341,27 @@ function animate() {
   player.update();
 
   if (keys.right.pressed && player.pos.x < 400) {
-    player.velocity.x = 5;
-  } else if (keys.left.pressed && player.pos.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = player.speed;
+  } else if (keys.left.pressed && player.pos.x > 100 || keys.left.pressed && scrollOffset === 0 && player.pos.x > 0) {
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
 
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       platforms.forEach(function (platform) {
-        platform.pos.x -= 5;
+        platform.pos.x -= player.speed;
       });
       genericObjects.forEach(function (genericObject) {
-        genericObject.pos.x -= 3;
+        genericObject.pos.x -= player.speed * 0.66;
       });
-    } else if (keys.left.pressed) {
-      scrollOffset -= 5;
+    } else if (keys.left.pressed && scrollOffset > 0) {
+      scrollOffset -= player.speed;
       platforms.forEach(function (platform) {
         platform.pos.x += 5;
       });
       genericObjects.forEach(function (genericObject) {
-        genericObject.pos.x += 3;
+        genericObject.pos.x += player.speed * 0.66;
       });
     }
   } //platform collision detaction
@@ -358,13 +371,14 @@ function animate() {
     if (player.pos.y + player.height <= platform.pos.y && player.pos.y + player.height + player.velocity.y >= platform.pos.y && player.pos.x + player.width >= platform.pos.x && player.pos.x + player.width >= platform.pos.x && player.pos.x <= platform.pos.x + platform.width) player.velocity.y = 0;
   }); // win condition
 
-  if (scrollOffset > 2000) console.log('you win'); //lose condition
+  if (scrollOffset > platfromimage.width * 5 + 300 - 2) console.log('you win'); //lose condition
 
   if (player.pos.y > gCanvas.height) {
     init();
   }
 }
 
+init();
 animate();
 addEventListener('keydown', function (_ref3) {
   var key = _ref3.key;
@@ -387,7 +401,7 @@ addEventListener('keydown', function (_ref3) {
 
     case 'w':
       console.log('up');
-      player.velocity.y -= 26;
+      player.velocity.y -= 25;
       break;
   }
 });
@@ -412,7 +426,6 @@ addEventListener('keyup', function (_ref4) {
 
     case 'w':
       console.log('up');
-      player.velocity.y = 0;
       break;
   }
 });
